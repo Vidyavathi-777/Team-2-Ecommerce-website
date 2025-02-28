@@ -15,54 +15,89 @@ const getAllProducts = async() =>{
     })
 }
 
-const addProduct = async({name,
-    description,
-    price,
-    stock,
-    imageUrl,
-    categoryId,
-    subcategoryId,
-    brandId,
-    typeId,
-    images }) =>{
-    return await prisma.product.create({
-        data: {
-            name,
-            description,
-            price,
-            stock,
-            imageUrl,
-            category : {connect:{id:categoryId}},
-            subcategory:subcategoryId ? {connect:{id:subcategoryId}} : undefined,
-            brand : brandId ? {connect:{id:brandId}}:undefined,
-            type : typeId ? {connect:{id : typeId}}:undefined,
-            images: {
-                create: images?.map(URL => ({ URL })) || []
+
+
+const getAllCategories=async() =>{
+    return await prisma.category.findMany({
+        include:{
+            products:true,    
+        }
+    })
+}
+
+const getCategoryProducts = async(name) =>{
+    return await prisma.category.findFirst({
+        where:{name:{equals:name,mode:"insensitive"}},
+        include:{
+            products:true,
+
+        }
+    })
+}
+
+
+const getAllSubcategories = async() =>{
+    return await prisma.subCategory.findMany({
+        include:{
+            products:true,
+        }
+    })
+}
+
+const getSubcategoryProducts = async(name) =>{
+    return await prisma.subCategory.findFirst({
+        where:{name:{equals:name,mode:"insensitive"}},
+        include:{
+            products:true,
+           
+        }
+    })
+}
+
+
+const getAllProductTypes = async() =>{
+    return await prisma.type.findMany({
+        include:{
+            products:true,
+        }
+    })
+}
+
+const getTypeProducts = async(name)=>{
+    return await prisma.type.findFirst({
+        where:{name:{equals:name,mode:"insensitive"}},
+        include:{
+            subcategory:true,
+            products:true,
+        }
+    })
+}
+
+const getAllBrands = async() =>{
+    return await prisma.brand.findMany({
+        include:{
+            products:true
+        }
+    })
+}
+
+const getBrandProduct = async(name) =>{
+    return await prisma.brand.findFirst({
+        where:{name:{equals:name,mode:"insensitive"}},
+        include:{
+            products:true,
+        }
+    })
+}
+
+
+module.exports ={getAllProducts,
+                getAllCategories,
+                getAllSubcategories,
+                getAllProductTypes,
+                getCategoryProducts,
+                getSubcategoryProducts,
+                getTypeProducts,
+                getAllBrands,
+                getBrandProduct
             }
-
-        },
-    });
-}
-
-const updateProduct = async(id,data) =>{
-    const product = await prisma.product.findUnique({ where: { id } });
-    if (!product) {
-        
-        throw new Error("Product not found");
-    }
-
-    return await prisma.product.update({
-        where: { id },
-        data,
-    });
-}
-
-const deleteProduct = async(id) =>{
-    const product = await prisma.product.findUnique({ where: { id } });
-    if (!product) {
-        
-        throw new Error("Product not found");
-    }
-    return await prisma.product.delete({where:{id} })
-}
-module.exports ={getAllProducts,addProduct,updateProduct,deleteProduct}

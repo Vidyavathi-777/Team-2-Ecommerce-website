@@ -1,10 +1,28 @@
 const express = require('express')
-const {getAllProducts,addProduct,updateProduct,deleteProduct} = require('../controllers/productController')
+const {getAllProducts,
+       getAllCategories,
+       getAllSubcategories,
+       getAllProductTypes,
+       getCategoryProducts,
+       getSubcategoryProducts,
+       getTypeProducts,
+       getAllBrands,
+       getBrandProduct
+    } = require('../controllers/productController')
 const {protect,authorize} = require('../middlewares/authMiddleware')
 const router = express.Router()
 
 router.get("/", getAllProducts);
-router.post("/addProduct", protect, authorize("seller", "admin"), addProduct);
-router.put("/updateProduct/:id", protect, authorize("seller", "admin"), updateProduct);
-router.delete("/deleteProduct", protect, authorize("seller", "admin"), deleteProduct);
+
+router.get("/categories",getAllCategories)
+router.get("/subcategories",getAllSubcategories)
+router.get("/types",getAllProductTypes)
+router.get("/brands",getAllBrands)
+
+router.get("/category/:name",getCategoryProducts)
+router.get("/subcategory/:name",getSubcategoryProducts)
+router.get("/type/:name",getTypeProducts)
+router.get("/brand/:name",getBrandProduct)
+
+
 module.exports = router
