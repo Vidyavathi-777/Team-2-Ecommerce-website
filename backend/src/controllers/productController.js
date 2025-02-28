@@ -13,36 +13,24 @@ const getAllProducts = async(req,res) =>{
 
 const addProduct = async(req,res) =>{
     try{
-        const product  = await productService.addProduct({data : req.body})
+        const product  = await productService.addProduct(req.body)
         res.status(201).json(product)
     }catch(error){
         res.status(500).json({error : error.message})
     }
 }
 
-const updateProduct = async(req,res) =>{
+const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
         const updateData = req.body;
 
-        // Ensure the product exists before updating
-        const existingProduct = await prisma.product.findUnique({ where: { id } });
-        if (!existingProduct) {
-            return res.status(404).json({ error: "Product not found" });
-        }
-
-        // Update the product
-        const updatedProduct = await prisma.product.update({
-            where: { id },
-            data: updateData
-        });
-
+        const updatedProduct = await productService.updateProduct(id, updateData);
         res.json(updatedProduct);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-
-}
+};
 
 const deleteProduct = async(req,res) =>{
     try {

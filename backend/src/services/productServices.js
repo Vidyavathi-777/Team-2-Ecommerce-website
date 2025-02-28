@@ -1,7 +1,18 @@
 const prisma = require('../../prisma/prismaClient');
 
 const getAllProducts = async() =>{
-    return await prisma.product.findMany()
+    return await prisma.product.findMany({
+        include:{
+            category:true,
+            subcategory:true,
+            brand:true,
+            images:true,
+            variants:true,
+            specifications:true,
+            type:true,
+
+        }
+    })
 }
 
 const addProduct = async({name,
@@ -9,18 +20,34 @@ const addProduct = async({name,
     price,
     stock,
     imageUrl,
-    category,
-    subcategory,
-    brand, }) =>{
+    categoryId,
+    subcategoryId,
+    brandId,
+    typeId,
+    images }) =>{
     return await prisma.product.create({
-        data: {name,description,price,stock,imageUrl,category,subcategory,brand},
+        data: {
+            name,
+            description,
+            price,
+            stock,
+            imageUrl,
+            category : {connect:{id:categoryId}},
+            subcategory:subcategoryId ? {connect:{id:subcategoryId}} : undefined,
+            brand : brandId ? {connect:{id:brandId}}:undefined,
+            type : typeId ? {connect:{id : typeId}}:undefined,
+            images: {
+                create: images?.map(URL => ({ URL })) || []
+            }
+
+        },
     });
 }
 
 const updateProduct = async(id,data) =>{
     const product = await prisma.product.findUnique({ where: { id } });
     if (!product) {
-        console.log("Product not found!");
+        
         throw new Error("Product not found");
     }
 
@@ -31,6 +58,11 @@ const updateProduct = async(id,data) =>{
 }
 
 const deleteProduct = async(id) =>{
-    return await prisma.product.delete({where:{id},})
+    const product = await prisma.product.findUnique({ where: { id } });
+    if (!product) {
+        
+        throw new Error("Product not found");
+    }
+    return await prisma.product.delete({where:{id} })
 }
 module.exports ={getAllProducts,addProduct,updateProduct,deleteProduct}

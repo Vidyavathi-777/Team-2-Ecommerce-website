@@ -60,12 +60,14 @@ model Product {
   id            String           @id @default(uuid())
   name          String
   description   String
-  price         Float
+  price         Int
   stock         Int
   imageUrl      String?
   categoryId    String
   subCategoryId String?
   brandId       String?
+  typeId        String?
+
   bestSeller    BestSeller?
   cartItems     Cart[]
   orderItems    OrderItem[]
@@ -76,6 +78,34 @@ model Product {
   variants      ProductVariant[]
   reviews       Review[]
   wishlist      Wishlist[]
+  specifications ProductOnSpecification[]
+  tags          ProductTag[]
+  type          Type? @relation(fields: [typeId],references: [id])
+}
+
+model ProductSpecification {
+  id        String  @id @default(uuid())
+  key       String
+  value     String
+  products  ProductOnSpecification[] 
+ 
+}
+
+model ProductOnSpecification {
+  id                     String                @id @default(uuid())
+  productId              String
+  specificationId        String
+  product               Product @relation(fields: [productId], references: [id])
+  specification         ProductSpecification @relation(fields: [specificationId], references: [id])
+}
+
+
+
+model ProductTag {
+  id        String  @id @default(uuid())
+  productId String
+  tag       String
+  product   Product @relation(fields: [productId], references: [id])
 }
 
 model ProductVariant {
@@ -107,12 +137,25 @@ model Category {
 }
 
 model SubCategory {
-  id         String    @id @default(uuid())
-  name       String    @unique
-  categoryId String
-  products   Product[]
-  category   Category  @relation(fields: [categoryId], references: [id])
+  id          String       @id @default(uuid())
+  name        String       @unique
+  categoryId  String
+  parentId    String?      
+
+  products    Product[]
+  category    Category     @relation(fields: [categoryId], references: [id])
+  
+ types      Type[] // One subcategory can have multiple types
 }
+
+model Type {
+  id           String      @id @default(uuid())
+  name         String      @unique
+  subCategoryId String
+  subcategory  SubCategory @relation(fields: [subCategoryId], references: [id])
+  products     Product[]
+}
+
 
 model Cart {
   id        String  @id @default(uuid())
