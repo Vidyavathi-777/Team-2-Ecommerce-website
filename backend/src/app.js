@@ -7,6 +7,9 @@ const { PrismaClient } = require('@prisma/client');
 
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes')
+const cartRoutes = require('./routes/cartRoutes')
+const wishlistRoutes = require('./routes/wishlistRoutes')
+const orderRoutes = require('./routes/orderRoutes')
 
 
 // dotenv.config();
@@ -19,6 +22,10 @@ app.use(cors())
 
 app.use('/users', userRoutes);
 app.use ('/products',productRoutes)
+app.use('/cart',cartRoutes)
+app.use('/wishlist',wishlistRoutes)
+app.use('/order',orderRoutes)
+
 
 const PORT = process.env.PORT || 3000;
 const DATABASE_URL = process.env.DATABASE_URL;

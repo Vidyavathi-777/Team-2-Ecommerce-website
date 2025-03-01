@@ -5,12 +5,11 @@ const userService = require('../services/userServices')
 const registerUser = async(req,res) =>{
     try{
         const { name, email, password, role, phone } = req.body;
-        console.log("Received Data:", req.body);
         if (!name || !email || !password) {
             return res.status(400).json({ error: "All fields are required" });
         }
         const user = await userService.registerUser({name,email,password,role,phone})
-        res.status(201).json(user)    
+        res.status(201).json({message:"User registered successfully"})    
     }catch(error){
         res.status(400).json({error:error.message})
     }
@@ -20,8 +19,7 @@ const registerUser = async(req,res) =>{
 const loginUser = async(req,res) =>{
     try{
         const{email,password} = req.body
-        // console.log("Email:", email);
-        // console.log("Password:", password);
+       
         const {token,user} = await userService.loginUser(email,password)
         res.status(200).json({token,user})
     }catch(error){
@@ -46,7 +44,7 @@ const getUserProfile = async(req,res) =>{
 const updateUserProfile = async(req,res) =>{
     try{
         const updateUser = await userService.updateUserProfile(req.user.id,req.body)
-        res.status(201).json(updateUser)
+        res.status(201).json({message:"Profile updated successfully",updateUser})
 
     }catch(error){
         res.status(400).json({error:error.message})

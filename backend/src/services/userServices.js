@@ -30,14 +30,13 @@ const registerUser = async ({ name, email, password, role, phone }) => {
 };
 
 const loginUser = async(email,password) =>{
-    // console.log("Email:", email);
-    // console.log("Password:", password);
+   
     const user = await prisma.user.findUnique({ where: { email} });
-    console.log("user found:",user)
+    
     if(!user) throw new Error("Invalid email ");
 
     const isMatch = await bcrypt.compare(password,user.password)
-    // console.log("passord match",isMatch)
+   
     if(!isMatch) throw new Error("Invalid Password");
 
     const token = jwt.sign(
@@ -45,20 +44,36 @@ const loginUser = async(email,password) =>{
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
     );
-    // console.log(token)
-    return { token, user: { id: user.id, name: user.name, email: user.email, role: user.role } };
+    
+    return { 
+        token, 
+        user: { id: user.id, name: user.name, email: user.email, role: user.role } };
     
 }
 
 const getUserProfile = async(id) =>{
     return await prisma.user.findUnique({
         where:{id},
-        select:{id:true,name:true,email:true,role:true,createdAt:true},
+        include:{
+            id:true,
+            name:true,
+            email:true,
+            role:true,
+            createdAt: true,
+            orders:true,
+            wishlist:true,
+            address:true,
+            cartItems:true
+
+        }
     })
 
 }
 
 const updateUserProfile = async(id,updateData) =>{
+    if (updateData.password) {
+        updateData.password = await bcrypt.hash(updateData.password, 10);
+    }
     return await prisma.user.update({
         where:{id},
         data:updateData,
