@@ -11,6 +11,16 @@ const getAllProducts = async(req,res) =>{
     }
 }
 
+const getProductById =async(req,res) =>{
+    try{
+        const {id} = req.params
+        const product = await productService.getProductById(id)
+        res.status(201).json(product)
+    }catch(error){
+        res.status(500).json({error:error.message})
+    }
+}
+
 const getAllCategories = async(req,res) =>{
     try{
         const categories = await productService.getAllCategories()
@@ -113,6 +123,7 @@ const getBrandProduct = async(req,res) =>{
     }
 }
 module.exports = {getAllProducts,
+                  getProductById,
                   getAllCategories,
                   getAllSubcategories,
                   getAllProductTypes,

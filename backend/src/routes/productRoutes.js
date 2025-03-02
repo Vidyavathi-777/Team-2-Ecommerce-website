@@ -1,5 +1,6 @@
 const express = require('express')
 const {getAllProducts,
+       getProductById,
        getAllCategories,
        getAllSubcategories,
        getAllProductTypes,
@@ -13,6 +14,7 @@ const {protect,authorize} = require('../middlewares/authMiddleware')
 const router = express.Router()
 
 router.get("/", getAllProducts);
+router.get("/:id",getProductById)
 
 router.get("/categories",getAllCategories)
 router.get("/subcategories",getAllSubcategories)

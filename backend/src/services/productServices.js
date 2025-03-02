@@ -15,7 +15,11 @@ const getAllProducts = async() =>{
     })
 }
 
-
+const getProductById = async(id) =>{
+    return await prisma.product.findUnique({
+        where:{id}
+    })
+}
 
 const getAllCategories=async() =>{
     return await prisma.category.findMany({
@@ -92,6 +96,7 @@ const getBrandProduct = async(name) =>{
 
 
 module.exports ={getAllProducts,
+                getProductById,
                 getAllCategories,
                 getAllSubcategories,
                 getAllProductTypes,
